@@ -1,3 +1,4 @@
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
@@ -5,6 +6,12 @@ from rest_framework.response import Response
 from .serializer import *
 from .selectors import *
 from .services import *
+from django.views.generic import TemplateView 
+from django.contrib.auth import authenticate, login, logout 
+from pointCollection.models import PointCollection  
+from pointCollection.serializer import *
+from product.models import *  
+from  product.serialisers import productSerializer
 
 
 # Create your views here.
@@ -75,3 +82,60 @@ def get_client_by_email(request):
         return Response(serialiszer.data)
     return {"error": "there is no clients in the Database"}
 
+
+
+class LoginView(TemplateView):
+    
+  template_name = 'client/login.html'
+
+  def post(self, request, **kwargs):
+
+    username = request.POST.get('username', False)
+    password = request.POST.get('password', False)
+    user = authenticate(username=username, password=password)
+    if user is not None and user.is_active:
+        login(request, user)
+        return HttpResponseRedirect( "client/index.hmtl" )
+
+    return render(request, self.template_name)
+
+class LogoutView(TemplateView):
+    
+  template_name = 'front/index.html'
+
+  def get(self, request, **kwargs):
+
+    logout(request)
+
+    return render(request, self.template_name)
+
+
+
+
+
+
+
+def index(request):
+    
+    try:
+        pcCol = PointCollection.objects.all()
+    except PointCollection.DoesNotExist:
+        pcCol = None
+    if pcCol :
+        ser  = PCSerializers(pcCol , many=True)
+        context = {"pc" :ser.data }
+        return render(request, 'client/index.html' ,  context)
+    return HttpResponse("none")
+
+
+
+def afficher_product(request):  
+    try:  
+        products  =  Product.objects.all() 
+    except Product.DoesNotExist:
+        return  None
+    if products:
+        ser =  productSerializer(products , many=True)
+    context = {'products': ser.data}
+    return render(request ,'client/produits.html' , context )
+    

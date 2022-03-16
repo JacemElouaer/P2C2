@@ -10,7 +10,6 @@ class Article_vendu(models.Model):
     quantite =  models.IntegerField()  
     panier  = models.ForeignKey('Panier' , on_delete=models.CASCADE)  
     
-    
 class Panier(models.Model): 
     date_ajout =  models.DateField(auto_now_add=True)
     

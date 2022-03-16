@@ -1,9 +1,10 @@
 import time
+from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .serialisers import *
-from .models import *
+from .models import * 
 
 # Create your views here.
 @api_view(["GET"])
@@ -13,7 +14,7 @@ def get_product(request):
     except product.DoesNotExist:
         product = None
     serializer = productSerializer(product, many=True)
-    return Response(serializer.data)
+    return HttpResponse(serializer.data)
 
 @api_view(["POST"])
 def create_product(request):

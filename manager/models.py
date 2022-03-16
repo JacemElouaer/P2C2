@@ -15,3 +15,5 @@ class Admin(models.Model):
     telephone = models.CharField(max_length=25, blank=True, null=True)
     email = models.EmailField(max_length=60, blank=True, null=True)
     add_date  =  models.DateField(auto_now_add=True)
+    def __str__(self): 
+        return "mr "+self.last_name
